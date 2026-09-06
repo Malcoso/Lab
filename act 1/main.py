@@ -50,13 +50,14 @@ def crear_producto(
     db: Session = Depends(obtener_session)
 ):
     producto = Producto(nombre=datos.nombre,precio=datos.precio)                                #Se almacena el producto
-    return altaprod(producto, db)                                                               #Se envia el prod y la sesion
+    altaprod(producto, db)
+    return {"detail": "Producto dado de alta"}                                                               
 
 @app.get("/productos/",response_model=list[ProductoRespuesta],)                                 #Recibir todos los productos
 def listar_productos(
     db: Session = Depends(obtener_session)
 ):
-    return productosgen(db)                                                                     #Se envia la sesion 
+    return productosgen(db)                                                                     #Retorna todos los productos 
 
 
 @app.get("/productos/{id}",response_model=ProductoRespuesta)                                    #Recibir producto por id
@@ -67,7 +68,7 @@ def obtener_producto(
     producto = db.get(Producto,id)                                                              #Busca si existe el producto
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
-    return busquedaprod(id, db)                                                                 #Se envia el id y la sesion
+    return busquedaprod(id, db)                                                                 #Retorna el producto
 
 
 @app.put("/productos/{id}",response_model=ProductoRespuesta)                                    #Modificar producto
@@ -76,15 +77,15 @@ def modificar_producto(
     datos:ProductoCrear,
     db: Session = Depends(obtener_session)
 ):
-    producto = db.get(Producto,id)
+    producto = db.get(Producto,id)                                                              #Busca el producto
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     
-    modifprod(producto,datos,db)
-    return producto
+    modifprod(producto,datos,db)                                                                #Modifica el producto
+    return {"detail": "Producto modificado" }
 
 
-@app.delete("/productos/{id}",status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/productos/{id}",status_code=status.HTTP_204_NO_CONTENT)                           #Eliminar productos
 def eliminar_producto(
     id:int,
     db: Session = Depends(obtener_session)
@@ -93,11 +94,11 @@ def eliminar_producto(
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     
-    borraprod(producto,db)
-    return {"detail": "Producto eliminado."}
+    borraprod(producto,db)                                                                      #Elimina el producto
+    return {"detail": "Producto eliminado."}                                                    #Da confirmacion
 
 
-@app.post("/ventas",response_model=VentaRespuesta,status_code=status.HTTP_201_CREATED)
+@app.post("/ventas",response_model=VentaRespuesta,status_code=status.HTTP_201_CREATED)        #Alta ventas
 def crear_venta(
     datos: VentaCrear,
     db: Session = Depends(obtener_session)
@@ -115,8 +116,8 @@ def crear_venta(
         cantidad=datos.cantidad,
         precio_total=producto.precio * datos.cantidad
     )
-    
-    return altaventa(venta, db)
+    altaventa(venta, db)
+    return {"detail": "Venta dada de alta"}
 
 
 @app.get("/ventas/",response_model=list[VentaRespuesta])
@@ -156,7 +157,7 @@ def modificar_venta(
 
     modificarventa(venta,producto,datos,db)
 
-    return venta
+    return {"detail": "Venta modificada"}
 
 
 @app.delete("/ventas/{id}",status_code=status.HTTP_204_NO_CONTENT)

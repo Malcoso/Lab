@@ -1,6 +1,6 @@
 from models import Producto
 
-def altaprod(producto, db):
+def altaprod(producto, db):             #Alta producto
     try:
         db.add(producto)
         db.commit()
@@ -11,7 +11,7 @@ def altaprod(producto, db):
         db.rollback()
         raise e
 
-def mostrarprod(producto):
+def mostrarprod(producto):            #Muestra el producto
     return {
 
         "id Producto": producto.id,
@@ -20,7 +20,7 @@ def mostrarprod(producto):
 
     }
 
-def modifprod(producto,datos,db):
+def modifprod(producto,datos,db):       #Modificacion producto
     
     try:
         producto.nombre=datos.nombre
@@ -33,7 +33,7 @@ def modifprod(producto,datos,db):
         db.rollback()
         raise e
 
-def borraprod(producto,db):
+def borraprod(producto,db):             #Borra el producto
     try:
         db.delete(producto)
         db.commit()
@@ -43,11 +43,11 @@ def borraprod(producto,db):
         db.rollback()
         raise e
 
-def productosgen(db):
+def productosgen(db):                       #Muestra todos los productos
     productos = db.query(Producto).all()
     return productos
 
-def busquedaprod(id,db):
+def busquedaprod(id,db):                                 #Busca el producto elegido
     producto = db.query(Producto).filter_by(id=id).first()
     if producto:
         return producto

@@ -15,7 +15,6 @@ def altaventa(venta, db):
         db.add(venta)
         db.commit()
         db.refresh(venta)
-        print("Venta agregada.")
         return venta
     except Exception as e:
         db.rollback()
@@ -36,7 +35,6 @@ def borrarventa(venta,db):
     try:
         db.delete(venta)
         db.commit()
-        print("Venta eliminada")
         return venta
     except Exception as e:
         raise e
@@ -46,7 +44,6 @@ def modificarventa(venta,producto,datos,db):
         venta.producto_id= datos.producto_id
         venta.cantidad= datos.cantidad
         venta.precio_total=producto.precio * datos.cantidad
-        print("Venta modificada")
         db.commit()
         db.refresh(venta)
     except Exception as e:
