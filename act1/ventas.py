@@ -2,7 +2,7 @@ from models import Producto, Venta
 from productos import mostrarprod
 from database import session
 from datetime import date, datetime,time
-
+ 
 def altaventa(venta, db):
     try:
         producto = db.get(Producto,venta.producto_id)

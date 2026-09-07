@@ -51,7 +51,7 @@ def crear_producto(
 ):
     producto = Producto(nombre=datos.nombre,precio=datos.precio)                                #Se almacena el producto
     altaprod(producto, db)
-    return {"detail": "Producto dado de alta"}                                                               
+    return producto                                                             
 
 @app.get("/productos/",response_model=list[ProductoRespuesta],)                                 #Recibir todos los productos
 def listar_productos(
@@ -82,7 +82,7 @@ def modificar_producto(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     
     modifprod(producto,datos,db)                                                                #Modifica el producto
-    return {"detail": "Producto modificado" }
+    return producto
 
 
 @app.delete("/productos/{id}",status_code=status.HTTP_204_NO_CONTENT)                           #Eliminar productos
@@ -117,7 +117,7 @@ def crear_venta(
         precio_total=producto.precio * datos.cantidad
     )
     altaventa(venta, db)
-    return {"detail": "Venta dada de alta"}
+    return venta
 
 
 @app.get("/ventas/",response_model=list[VentaRespuesta])
@@ -157,7 +157,7 @@ def modificar_venta(
 
     modificarventa(venta,producto,datos,db)
 
-    return {"detail": "Venta modificada"}
+    return venta
 
 
 @app.delete("/ventas/{id}",status_code=status.HTTP_204_NO_CONTENT)
