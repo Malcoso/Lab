@@ -39,11 +39,11 @@ def borrarventa(venta,db):
     except Exception as e:
         raise e
 
-def modificarventa(venta,datos,db):
+def modificarventa(venta,producto,datos,db):
     try:
         venta.producto_id= datos.producto_id
         venta.cantidad= datos.cantidad
-        venta.precio_total=datos.producto.precio * datos.cantidad
+        venta.precio_total=producto.precio * datos.cantidad
         db.commit()
         db.refresh(venta)
     except Exception as e:
