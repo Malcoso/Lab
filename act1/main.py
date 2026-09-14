@@ -11,8 +11,7 @@ from ventas import altaventa,ventasgen,busquedaventa,modificarventa,borrarventa
 from database import sessionLocal
 
 app = FastAPI()
-
-class ProductoCrear(BaseModel):                         #Input producto
+class ProductoCrear(BaseModel):
     nombre: str
     precio: float
 
@@ -46,10 +45,10 @@ def obtener_session()-> Generator[Session,None,None]:   #Se obtiene la sesion de
 
 @app.post("/productos",response_model=ProductoRespuesta,status_code=status.HTTP_201_CREATED)    #Para crear el producto
 def crear_producto(
-    datos:ProductoCrear,
+    producto: ProductoCrear,
     db: Session = Depends(obtener_session)
 ):
-    producto = Producto(nombre=datos.nombre,precio=datos.precio)                                #Se almacena el producto
+              
     altaprod(producto, db)
     return producto                                                             
 
@@ -74,15 +73,15 @@ def obtener_producto(
 @app.put("/productos/{id}",response_model=ProductoRespuesta)                                    #Modificar producto
 def modificar_producto(
     id:int,
-    datos:ProductoCrear,
+    producto:ProductoCrear,
     db: Session = Depends(obtener_session)
 ):
-    producto = db.get(Producto,id)                                                              #Busca el producto
-    if producto is None:
+    productoobt = db.get(Producto,id)                                                              #Busca el producto
+    if productoobt is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     
-    modifprod(producto,datos,db)                                                                #Modifica el producto
-    return producto
+    modifprod(productoobt,producto,db)                                                                #Modifica el producto
+    return productoobt
 
 
 @app.delete("/productos/{id}",status_code=status.HTTP_204_NO_CONTENT)                           #Eliminar productos
@@ -100,21 +99,21 @@ def eliminar_producto(
 
 @app.post("/ventas",response_model=VentaRespuesta,status_code=status.HTTP_201_CREATED)        #Alta ventas
 def crear_venta(
-    datos: VentaCrear,
+    venta:VentaCrear,
     db: Session = Depends(obtener_session)
 ):
-    producto = db.get(Producto, datos.producto_id)
+    producto = db.get(Producto, venta.producto_id)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado. No se puede realizar la venta.")
 
-    if datos.cantidad <= 0:
+    if venta.cantidad <= 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La cantidad debe ser mayor que cero.")
     
     venta = Venta(dia=date.today(),
         hora=datetime.now().time(),
-        producto_id=datos.producto_id,        
-        cantidad=datos.cantidad,
-        precio_total=producto.precio * datos.cantidad
+        producto_id=venta.producto_id,        
+        cantidad=venta.cantidad,
+        precio_total=producto.precio * venta.cantidad
     )
     altaventa(venta, db)
     return venta
@@ -140,22 +139,23 @@ def obtener_venta(
 
 @app.put("/ventas/{id}",response_model=VentaRespuesta)
 def modificar_venta(
-    id:int,
-    datos:VentaCrear,
+    idventa:int,
+    producto_id:int,
+    cantidad:int,
     db: Session = Depends(obtener_session)
 ):
-    venta = db.get(Venta,id)
+    venta = db.get(Venta,idventa)
     if venta is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venta no encontrada.")
     
-    producto = db.get(Producto, datos.producto_id)
+    producto = db.get(Producto, producto_id)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado. No se puede modificar la venta.")
 
-    if datos.cantidad <= 0:
+    if cantidad <= 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La cantidad debe ser mayor que cero.")
 
-    modificarventa(venta,producto,datos,db)
+    modificarventa(venta,producto,producto,db)
 
     return venta
 
