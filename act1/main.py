@@ -1,7 +1,5 @@
-from datetime import date, datetime,time
 from fastapi import FastAPI,Depends,HTTPException,status
 
-from pydantic import BaseModel,ConfigDict
 from sqlalchemy.orm import Session
 from typing import Generator
 
@@ -9,33 +7,10 @@ from models import Producto, Venta
 from productos import altaprod, productosgen,busquedaprod,modifprod,borraprod
 from ventas import altaventa,ventasgen,busquedaventa,modificarventa,borrarventa
 from database import sessionLocal
-
+from schema import ProductoCrear, ProductoRespuesta, VentaCrear,VentaRespuesta
 app = FastAPI()
 
-class ProductoCrear(BaseModel):                         #Input producto
-    nombre: str
-    precio: float
 
-class ProductoRespuesta(BaseModel):                     #Lo que se va mostrar del producto 
-    id: int
-    nombre : str
-    precio : float
-    model_config = ConfigDict(from_attributes=True)
-
-class VentaCrear(BaseModel):                            #Input venta
-    producto_id: int
-    cantidad: int
-
-class VentaRespuesta(BaseModel):                        #Lo que se va mostrar de la venta
-    id: int
-    dia: date
-    hora: time
-    producto_id: int
-    producto : ProductoRespuesta
-    cantidad: int
-    precio_total: float
-
-    model_config = ConfigDict(from_attributes=True)
 
 def obtener_session()-> Generator[Session,None,None]:   #Se obtiene la sesion de la base de datos
     db = sessionLocal()
@@ -49,9 +24,24 @@ def crear_producto(
     datos:ProductoCrear,
     db: Session = Depends(obtener_session)
 ):
-    producto = Producto(nombre=datos.nombre,precio=datos.precio)                                #Se almacena el producto
-    altaprod(producto, db)
-    return producto                                                             
+    try:
+        nombre = datos.nombre.strip()
+        producto_existente = db.query(Producto).filter(Producto.nombre == nombre).first()
+
+        if producto_existente:
+            raise HTTPException(
+              status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El producto ya existe."
+            )
+
+        producto = Producto(nombre=nombre, precio=datos.precio)
+
+        return altaprod(producto, db)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An error occurred while trying to create product: {e}")    
+                                                          
 
 @app.get("/productos/",response_model=list[ProductoRespuesta],)                                 #Recibir todos los productos
 def listar_productos(
@@ -110,8 +100,8 @@ def crear_venta(
     if datos.cantidad <= 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La cantidad debe ser mayor que cero.")
     
-    venta = Venta(dia=date.today(),
-        hora=datetime.now().time(),
+    venta = Venta(dia=datos.dia_venta,
+        hora=datos.hora_venta,
         producto_id=datos.producto_id,        
         cantidad=datos.cantidad,
         precio_total=producto.precio * datos.cantidad

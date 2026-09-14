@@ -41,6 +41,8 @@ def borrarventa(venta,db):
 
 def modificarventa(venta,producto,datos,db):
     try:
+        venta.dia=datos.dia_venta
+        venta.hora=datos.hora_venta
         venta.producto_id= datos.producto_id
         venta.cantidad= datos.cantidad
         venta.precio_total=producto.precio * datos.cantidad
