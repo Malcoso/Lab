@@ -22,7 +22,7 @@ class VentaRespuesta(BaseModel):                        #Lo que se va mostrar de
     dia: date
     hora: time
     producto_id: int
-    producto : ProductoRespuesta
+    producto : ProductoRespuesta                        #Tengo que cambiar que no se cambie el producto cuando se haya una modificacion en el mismo
     cantidad: int
     precio_total: float
 

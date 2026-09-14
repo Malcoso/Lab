@@ -114,6 +114,7 @@ def crear_venta(
 def listar_ventas(
     db: Session = Depends(obtener_session)
 ):
+    #EL PRECIOTOTAL TIENE QUE ESTAR CALCULADO ACA
     return ventasgen(db)
 
 

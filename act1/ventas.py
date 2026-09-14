@@ -54,8 +54,8 @@ def modificarventa(venta,producto,datos,db):
 
 
 def ventasgen(db):
-    ventas = db.query(Venta).all()
-    return ventas
+    ventas = db.query(Venta).all() # TENDRIA QUE TAR POR ACA ? PARA CALCULAR EL PRECIO TOTAL DE LA VENTA 
+    return ventas                  
 
 def busquedaventa(id,db):
     venta = db.query(Venta).filter_by(id=id).first()

@@ -19,4 +19,4 @@ class Venta(base):
     producto_id = Column(Integer, ForeignKey('productos.id'))
     producto = relationship('Producto', back_populates='ventas')
     cantidad = Column(Integer, nullable=False)
-    precio_total = Column(Float, nullable=False)
+    precio_total = Column(Float, nullable=False) #ELIMINAR
