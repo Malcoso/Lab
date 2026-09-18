@@ -3,14 +3,12 @@ from fastapi import FastAPI,Depends,HTTPException,status
 from sqlalchemy.orm import Session
 from typing import Generator
 
-from models import Producto, Venta
+from models import Producto, Venta,Carrito,Carrito_Producto
 from productos import altaprod, productosgen,busquedaprod,modifprod,borraprod
 from ventas import altaventa,ventasgen,busquedaventa,modificarventa,borrarventa
 from database import sessionLocal
 from schema import ProductoCrear, ProductoRespuesta, VentaCrear,VentaRespuesta
 app = FastAPI()
-
-
 
 def obtener_session()-> Generator[Session,None,None]:   #Se obtiene la sesion de la base de datos
     db = sessionLocal()

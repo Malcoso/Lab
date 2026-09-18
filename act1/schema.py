@@ -27,3 +27,12 @@ class VentaRespuesta(BaseModel):                        #Lo que se va mostrar de
     precio_total: float
 
     model_config = ConfigDict(from_attributes=True)
+
+class CarritoCrear(BaseModel):
+    estado : str
+
+class CarritoRespuesta(BaseModel):
+    carrito_id : int
+    dia_creacion : date
+    estado : str
+

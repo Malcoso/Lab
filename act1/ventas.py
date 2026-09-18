@@ -1,5 +1,6 @@
 from models import Producto, Venta
 from productos import mostrarprod
+from carrito import mostrarcarrito
 from database import session
 from datetime import date, datetime,time
  
@@ -27,8 +28,8 @@ def mostrarventa(venta):
         "hora": venta.hora,
         "producto_id": venta.producto_id,
         "producto": mostrarprod(venta.producto),
-        "cantidad": venta.cantidad,
-        "precio_total": venta.precio_total
+        "carrito_id": venta.carrito_id,
+        "carrito": mostrarcarrito(venta.carrito)
     }
 
 def borrarventa(venta,db):
@@ -39,18 +40,15 @@ def borrarventa(venta,db):
     except Exception as e:
         raise e
 
-def modificarventa(venta,producto,datos,db):
+def modificarventa(venta,datos,db):
     try:
         venta.dia=datos.dia_venta
         venta.hora=datos.hora_venta
         venta.producto_id= datos.producto_id
-        venta.cantidad= datos.cantidad
-        venta.precio_total=producto.precio * datos.cantidad
         db.commit()
         db.refresh(venta)
     except Exception as e:
         raise e
-
 
 
 def ventasgen(db):

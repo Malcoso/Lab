@@ -21,7 +21,6 @@ def mostrarprod(producto):            #Muestra el producto
     }
 
 def modifprod(producto,datos,db):       #Modificacion producto
-    
     try:
         producto.nombre=datos.nombre
         producto.precio=datos.precio
