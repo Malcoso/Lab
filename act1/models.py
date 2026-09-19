@@ -29,9 +29,9 @@ class Carrito(base):
     __tablename__ = 'carritos'
     id = Column(Integer,autoincrement=True,primary_key=True)
     fecha_creacion=Column(Date,nullable=False)
-    estado=Column(String(10),default='Abierto',nullable=False)
+    estado=Column(String(20),default='abierto',nullable=False)
 
-    venta=relationship('Venta',backpopulates='carrito')
+    venta=relationship('Venta',back_populates='carrito')
     carrito_productos = relationship('Carrito_Producto', back_populates='carrito')
 
 

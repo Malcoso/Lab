@@ -29,10 +29,14 @@ class VentaRespuesta(BaseModel):                        #Lo que se va mostrar de
     model_config = ConfigDict(from_attributes=True)
 
 class CarritoCrear(BaseModel):
+    dia : date
     estado : str
 
 class CarritoRespuesta(BaseModel):
     carrito_id : int
     dia_creacion : date
     estado : str
+    producto : ProductoRespuesta
+    
+    model_config = ConfigDict(from_attributes=True)
 

@@ -6,8 +6,11 @@ from typing import Generator
 from models import Producto, Venta,Carrito,Carrito_Producto
 from productos import altaprod, productosgen,busquedaprod,modifprod,borraprod
 from ventas import altaventa,ventasgen,busquedaventa,modificarventa,borrarventa
+from carrito import altacarrito,carritosgen,busquedacarrito,modifcarrito,borrarcarrito
 from database import sessionLocal
-from schema import ProductoCrear, ProductoRespuesta, VentaCrear,VentaRespuesta
+from schema import ProductoCrear, ProductoRespuesta
+from schema import VentaCrear,VentaRespuesta
+from schema import CarritoCrear,CarritoRespuesta
 app = FastAPI()
 
 def obtener_session()-> Generator[Session,None,None]:   #Se obtiene la sesion de la base de datos
@@ -112,7 +115,7 @@ def crear_venta(
 def listar_ventas(
     db: Session = Depends(obtener_session)
 ):
-    #EL PRECIOTOTAL TIENE QUE ESTAR CALCULADO ACA
+    #EL PRECIOTOTAL TIENE QUE ESTAR CALCULADO por ACA ( quizas, tengo que acomodar todo aun)
     return ventasgen(db)
 
 
@@ -160,3 +163,69 @@ def eliminar_venta(
     
     borrarventa(venta,db)
     return {"detail": "Venta eliminada."}
+
+
+@app.post("/carritos",response_model=CarritoCrear,status_code=status.HTTP_201_CREATED)
+def crear_carrito(
+    carrito : CarritoCrear,
+    db: Session = Depends(obtener_session) 
+):
+    if carrito.estado == 'abierto':
+        try:
+            carritos= Carrito(fecha_creacion=carrito.dia,estado=carrito.estado)
+            return(altacarrito(carritos,db))
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An error occurred while trying to create carrito: {e}") 
+    elif carrito.estado == 'cerrado':
+        raise HTTPException(status_code=400, detail="No se ha hecho el carrito")
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No existe el estado escrito")
+
+
+@app.get("/carritos/",response_model=list[CarritoRespuesta])
+def listar_carritos(
+    db : Session = Depends(obtener_session)
+):
+    return(carritosgen(db))
+
+@app.get("/carritos/{id}",response_model=CarritoRespuesta)
+def obtener_carrito(
+    id : int,
+    db : Session = Depends(obtener_session)
+):
+    return busquedacarrito(id,db)
+
+@app.put("/carritos/{id}",response_model=CarritoRespuesta)
+def modificar_carrito(
+    id : int,
+    datos : CarritoCrear,
+    db : Session = Depends(obtener_session)
+):
+    carrito = db.get(carrito,id)
+    if carrito is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Carrito no encontrado.")
+    else:            
+        if carrito.venta:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= f"No se puede alterar un carrito ya utilizado")
+        else:
+            if datos.estado=='cerrado' or datos.estado == 'abierto':
+                return modifcarrito(carrito,datos,db)
+            else:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No existe el estado escrito")
+
+@app.delete("/carritos/{id}",status_code=status.HTTP_204_NO_CONTENT)
+def eliminar_carrito(
+    carrito : int,
+    db : Session = Depends(obtener_session)
+):        
+    carrito = db.get(carrito,id)
+    if carrito is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Carrito no encontrado.")
+    else:            
+        if carrito.venta:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= f"No se puede eliminar un carrito ya utilizado")
+        else:
+            borrarcarrito(carrito,db)
+

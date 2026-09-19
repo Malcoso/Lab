@@ -65,6 +65,17 @@ def busquedacarrito(id,db):
     else:
         return None
 
+def borrarcarrito(carrito,db):
+    try:
+        db.delete(carrito)
+        db.commit()
+        print("Carrito eliminado")
+        return carrito
+    except Exception as e:
+        db.rollback()
+        raise e
+
+#deberia mover los carrito_producto a su propio coso
 def altacarrito_producto(carrito_producto,db):
     try:
         db.add(carrito_producto)
@@ -87,7 +98,7 @@ def mostrarcarrito_producto(carrito_producto):
     }
 
 
-def carrito_productogen(db):
+def carrito_prodgen(db):
     carrito_prod=db.query(Carrito_Producto).all()
     if carrito_prod:
         return carrito_prod
@@ -105,6 +116,7 @@ def busquedacarritos_prod(id_carrito,db):
     carrito_producto=db.query(carrito_producto).filterby(id_carrito=id_carrito).all()
     return carrito_producto
 
+#Hacer en el main.py
 def agregar_producto_carrito(db,id_carrito,id_producto,cantidad):
     item = db.query(Carrito_Producto).filter_by(
         id_carrito=id_carrito,
@@ -118,6 +130,13 @@ def agregar_producto_carrito(db,id_carrito,id_producto,cantidad):
             id_producto=id_producto,
             cantidad=cantidad
         )
-    db.add(item)
+        db.add(item)
     db.commit()
     return item
+
+def busq_prod_carrito(db,id_carrito,id_producto):
+    carrito_producto = db.query(carrito_producto).filterby(id_carrito=id_carrito,id_producto=id_producto).first()
+    if carrito_producto:
+        return carrito_producto
+    else:
+        return None
