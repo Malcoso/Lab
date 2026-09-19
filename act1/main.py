@@ -7,10 +7,12 @@ from models import Producto, Venta,Carrito,Carrito_Producto
 from productos import altaprod, productosgen,busquedaprod,modifprod,borraprod
 from ventas import altaventa,ventasgen,busquedaventa,modificarventa,borrarventa
 from carrito import altacarrito,carritosgen,busquedacarrito,modifcarrito,borrarcarrito
+from carrito_producto import altacarrito_producto
 from database import sessionLocal
 from schema import ProductoCrear, ProductoRespuesta
 from schema import VentaCrear,VentaRespuesta
 from schema import CarritoCrear,CarritoRespuesta
+from schema import Carrito_ProductoCrear,Carrito_ProductoRespuesta
 app = FastAPI()
 
 def obtener_session()-> Generator[Session,None,None]:   #Se obtiene la sesion de la base de datos
@@ -228,4 +230,34 @@ def eliminar_carrito(
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail= f"No se puede eliminar un carrito ya utilizado")
         else:
             borrarcarrito(carrito,db)
+
+@app.post("/carritos/{id}/productos",response_model=Carrito_ProductoRespuesta,status_code=status.HTTP_201_CREATED)
+def crear_carrito_producto(
+        datos : Carrito_ProductoCrear,
+        db : Session = Depends(obtener_session)
+):
+    try: 
+        carrito_existente = busquedacarrito(datos.id_carrito,db)
+        if carrito_existente is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'No existe el carrito')
+        
+        if carrito_existente.estado=='abierto':
+            if busquedaprod(datos.id_producto):
+                if datos.cantidad>0:
+                    return altacarrito_producto(datos,db)
+                else:
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f'La cantidad debe ser mayor a 0')
+            else:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f'No existe el producto')
+        else:
+            if carrito_existente.estado=='cerrado':
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f'El carrito ya fue usado')
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An error occurred while trying to create carrito_producto: {e}")   
+
+    
+        
 

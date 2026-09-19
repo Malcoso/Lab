@@ -10,7 +10,6 @@ class Producto(base):
     nombre = Column(String(50), nullable=False)
     precio = Column(Float, nullable=False)
 
-    ventas = relationship('Venta', back_populates='producto')
     carrito_productos = relationship('Carrito_Producto',back_populates='producto')
 
 class Venta(base):
@@ -19,11 +18,8 @@ class Venta(base):
     dia = Column(Date, nullable=False)
     hora = Column(Time, nullable=False)
 
-    producto_id = Column(Integer, ForeignKey('productos.id'))
-    producto = relationship('Producto', back_populates='ventas')
-
     carrito_id = Column(Integer,ForeignKey('carritos.id'))
-    carrito = relationship('Carrito',back_populates='ventas')
+    carrito = relationship('Carrito',back_populates='venta')
 
 class Carrito(base):
     __tablename__ = 'carritos'
@@ -31,7 +27,7 @@ class Carrito(base):
     fecha_creacion=Column(Date,nullable=False)
     estado=Column(String(20),default='abierto',nullable=False)
 
-    venta=relationship('Venta',back_populates='carrito')
+    venta = relationship('Venta',back_populates='carrito')
     carrito_productos = relationship('Carrito_Producto', back_populates='carrito')
 
 

@@ -21,10 +21,7 @@ class VentaRespuesta(BaseModel):                        #Lo que se va mostrar de
     id: int
     dia: date
     hora: time
-    producto_id: int
-    producto : ProductoRespuesta                        #Tengo que cambiar que no se cambie el producto cuando se haya una modificacion en el mismo
-    cantidad: int
-    precio_total: float
+    carrito : CarritoRespuesta
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -36,7 +33,16 @@ class CarritoRespuesta(BaseModel):
     carrito_id : int
     dia_creacion : date
     estado : str
-    producto : ProductoRespuesta
+    productos : ProductoRespuesta
     
     model_config = ConfigDict(from_attributes=True)
 
+class Carrito_ProductoCrear(BaseModel):
+    id_carrito: int
+    id_producto : int
+    cantidad : int
+
+class Carrito_ProductoRespuesta(BaseModel):
+    id_carrito : int
+    id_producto : int
+    cantidad : int
