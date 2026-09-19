@@ -38,9 +38,11 @@ class CarritoRespuesta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class Carrito_ProductoCrear(BaseModel):
+    id_carrito: int
     id_producto : int
     cantidad : int
 
 class Carrito_ProductoRespuesta(BaseModel):
+    id_carrito : int
     id_producto : int
     cantidad : int
