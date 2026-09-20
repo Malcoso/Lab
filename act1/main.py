@@ -8,9 +8,9 @@ from routers.carrito_productos import router as carrito_productos_router
 app = FastAPI()
 
 app.include_router(productos_router)
-app.include_router(ventas_router)
 app.include_router(carritos_router)
 app.include_router(carrito_productos_router)
+app.include_router(ventas_router)
 
     
         

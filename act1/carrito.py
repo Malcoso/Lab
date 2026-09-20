@@ -6,36 +6,39 @@ def altacarrito(carrito,db):
         db.add(carrito)
         db.commit()
         db.refresh(carrito)
-        print("Producto agregado.")
+        print("Carrito agregado.")
         return carrito
     except Exception as e:
         db.rollback()
         raise e
 
 def mostrarcarrito(carrito,db):
-    items = busquedacarrito_prod(carrito.id,db)
+    items = db.query(Carrito_Producto).filter_by(id_carrito=carrito.id).all()
 
     productos = []
-    total = 0
+
 
     for item in items:
-        producto = busquedaprod(item.id,db)
-        if producto:
-            subtotal = producto.precio * item.cantidad
-            total +=subtotal
-            productos.append({
-                "id_producto": producto.id,
-                "nombre": producto.nombre,
-                "precio": producto.precio,
-                "cantidad": item.cantidad,
-                "subtotal": subtotal
-            })
+        producto = item.producto
+        if producto is None:
+            continue
+
+        subtotal = producto.precio * item.cantidad
+
+        productos.append({
+            "id": item.id,
+            "nombre": producto.nombre,
+            "precio_unitario": producto.precio,
+            "cantidad": item.cantidad,
+            "subtotal": subtotal
+        })
+
     return {
-        "ID Carrito ": carrito.id,
-        "Fecha de creacion ": carrito.fecha_creacion,
-        "Estado ": carrito.estado,
-        "Productos ": productos,
-        "Total " : total
+        "id": carrito.id,
+        "fecha_creacion": carrito.fecha_creacion,
+        "estado": carrito.estado,
+        "productos": productos,
+
     }
 
 def modifcarrito(carrito,datos,db):
