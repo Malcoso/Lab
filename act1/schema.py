@@ -14,7 +14,9 @@ class ProductoRespuesta(BaseModel):                     #Lo que se va mostrar de
 class VentaCrear(BaseModel):                            #Input venta
     dia_venta : date
     hora_venta : time
-    carrito_id : int
+
+class AsociarVenta(BaseModel):
+    carrito_id: int
 
 class VentaListaRespuesta(BaseModel):
     id: int
@@ -29,7 +31,7 @@ class VentaDetalleRespuesta(BaseModel):
     fecha: date
     hora: time
     precio_total: float
-    carrito: CarritoRespuestaDetalle
+    carrito: CarritoRespuestaDetalle | None = None
 
     model_config = ConfigDict(from_attributes=True)
     

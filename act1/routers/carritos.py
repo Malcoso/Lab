@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Carrito
+from models import Carrito,Carrito_Producto
 from carrito import altacarrito, carritosgen, busquedacarrito, modifcarrito, borrarcarrito,mostrarcarrito
+from carrito_producto import borrar_prod_carrito
 from schema import CarritoCrear,CarritosRespuesta,CarritoRespuesta
 
 router = APIRouter(prefix="/carritos", tags=["carritos"])
@@ -63,7 +64,7 @@ def eliminar_carrito(id: int, db: Session = Depends(get_db)):
 
     if carrito.venta:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No se puede eliminar un carrito ya utilizado")
-
+    
     borrarcarrito(carrito, db)
     return {"detail": "Carrito eliminado."}
 

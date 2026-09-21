@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Producto
+from models import Producto,Carrito_Producto
 from productos import altaprod, productosgen, busquedaprod, modifprod, borraprod
 from schema import ProductoCrear, ProductoRespuesta
 
@@ -62,6 +62,7 @@ def modificar_producto(id: int, datos: ProductoCrear, db: Session = Depends(get_
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El producto ya existe.",
             )
+
     if datos.precio <=0:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "El producto tiene que tener un valor mayor a 0")
     
@@ -73,6 +74,9 @@ def eliminar_producto(id: int, db: Session = Depends(get_db)):
     producto = db.get(Producto, id)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
-
+    
+    producto_usado = db.query(Carrito_Producto).filter(Carrito_Producto.id_producto==id).first()
+    if producto_usado: 
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail = "El producto fue utilizado en un carrito")
     borraprod(producto, db)
     return {"detail": "Producto eliminado."}

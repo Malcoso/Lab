@@ -23,8 +23,8 @@ def borrarventa(venta,db):
 
 def modificarventa(venta,datos,db):
     try:
-        venta.dia=datos.dia_venta
-        venta.hora=datos.hora_venta
+        venta.dia=datos.dia
+        venta.hora=datos.hora
         venta.carrito_id = datos.carrito_id
         db.commit()
         db.refresh(venta)

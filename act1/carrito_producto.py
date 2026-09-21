@@ -74,7 +74,7 @@ def alta_carrito(db,id_carrito,id_producto,cantidad):
     return item
 
 def busq_prod_carrito(db,id_carrito,id_producto):
-    carrito_producto = db.query(Carrito_Producto).filter_by(id_carrito=id_carrito,id=id_producto).first()
+    carrito_producto = db.query(Carrito_Producto).filter_by(id_carrito=id_carrito,id_producto=id_producto).first()
     if carrito_producto:
         return carrito_producto
     else:

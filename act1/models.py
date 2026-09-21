@@ -28,7 +28,7 @@ class Carrito(base):
     estado=Column(String(20),default='abierto',nullable=False)
 
     venta = relationship('Venta',back_populates='carrito')
-    carrito_productos = relationship('Carrito_Producto', back_populates='carrito')
+    carrito_productos = relationship('Carrito_Producto', back_populates='carrito',cascade="all, delete-orphan")
 
 
 class Carrito_Producto(base):

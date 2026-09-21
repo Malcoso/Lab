@@ -76,8 +76,13 @@ def eliminar_producto_carrito(
     carrito = busquedacarrito(idcarrito,db)
     if carrito is None:
         raise HTTPException(status_code=404, detail="No existe el carrito")
+    
+    if carrito.estado =="cerrado":
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="El carrito ya esta cerrado")
+    
     item = busq_prod_carrito(db,idcarrito,id)
     if item is None:
-        raise HTTPException(status_code=404, detail="No existe el carrito_producto")
+        raise HTTPException(status_code=404, detail="No existe el producto en el carrito")
+    
     borrar_prod_carrito(db,item)
     return {"detail" : "carrito_producto eliminado"}
