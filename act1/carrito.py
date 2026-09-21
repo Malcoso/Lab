@@ -1,6 +1,5 @@
 from models import Carrito,Carrito_Producto
-from productos import busquedaprod
-from carrito_producto import busquedacarrito_prod
+
 def altacarrito(carrito,db):
     try:
         db.add(carrito)
@@ -56,17 +55,14 @@ def modifcarrito(carrito,datos,db):
 def carritosgen(db):                       
     carritos = db.query(Carrito).all()
     if carritos:
-        return carritos
+        
+        return [mostrarcarrito(c,db) for c in carritos]
     else:
         return None
 
 def busquedacarrito(id,db):   
-    carritos = db.query(Carrito).filter_by(id=id).first()
-    if carritos:
-        return carritos
-    else:
-        return None
-
+    return db.query(Carrito).filter(Carrito.id ==id).first()
+    
 def borrarcarrito(carrito,db):
     try:
         db.delete(carrito)
@@ -76,6 +72,4 @@ def borrarcarrito(carrito,db):
     except Exception as e:
         db.rollback()
         raise e
-
-#deberia mover los carrito_producto a su propio coso
 

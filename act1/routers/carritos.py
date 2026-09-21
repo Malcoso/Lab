@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import Carrito
 from carrito import altacarrito, carritosgen, busquedacarrito, modifcarrito, borrarcarrito,mostrarcarrito
-from schema import CarritoCrear, CarritoRespuesta,CarritosRespuesta,CarritoRespuestas
+from schema import CarritoCrear,CarritosRespuesta,CarritoRespuesta
 
 router = APIRouter(prefix="/carritos", tags=["carritos"])
 
@@ -26,12 +26,12 @@ def crear_carrito(carrito: CarritoCrear, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No existe el estado escrito")
 
 
-@router.get("/", response_model=list[CarritoRespuestas])
+@router.get("/", response_model=list[CarritoRespuesta])
 def listar_carritos(db: Session = Depends(get_db)):
     return carritosgen(db)
 
 
-@router.get("/{id}", response_model=CarritoRespuestas)
+@router.get("/{id}", response_model=CarritoRespuesta)
 def obtener_carrito(id: int, db: Session = Depends(get_db)):
     carrito = busquedacarrito(id,db)
     if carrito is None:
@@ -41,7 +41,7 @@ def obtener_carrito(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", response_model=CarritosRespuesta)
 def modificar_carrito(id: int, datos: CarritoCrear, db: Session = Depends(get_db)):
-    carrito = db.get(Carrito, id)
+    carrito = busquedacarrito(id,db)
     if carrito is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Carrito no encontrado.")
 

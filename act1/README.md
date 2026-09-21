@@ -1,109 +1,101 @@
-# API de productos y ventas
+# Proyecto API de Carritos, Productos y Ventas
 
-API REST desarrollada con Python, FastAPI, SQLAlchemy y SQLite. Permite
-administrar productos y registrar ventas asociadas a ellos.
+Este proyecto es una API REST desarrollada con FastAPI y SQLAlchemy para gestionar:
 
-## Requisitos
+- productos
+- carritos
+- productos dentro de cada carrito
+- ventas asociadas a carritos
 
-- Python 3.10 o superior
-- `pip`
+## Tecnologías
 
-## Instalacion
+- Python
+- FastAPI
+- SQLAlchemy
+- SQLite
 
-1. Crea y activa un entorno virtual:
+## Estructura del proyecto
 
-	 ```powershell
-	 python -m venv .venv
-	 .venv\Scripts\Activate.ps1
-	 ```
+- `main.py`: punto de entrada de la aplicación
+- `database.py`: configuración de la base de datos
+- `models.py`: modelos ORM
+- `schema.py`: schemas de validación y respuesta
+- `productos.py`: lógica de productos
+- `carrito.py`: lógica de carritos
+- `carrito_producto.py`: lógica de relación carrito-producto
+- `ventas.py`: lógica de ventas
+- `routers/`: endpoints de la API
+  - `productos.py`
+  - `carritos.py`
+  - `carrito_productos.py`
+  - `ventas.py`
+- `requirements.txt`: dependencias del proyecto
 
-	 En Linux o macOS, activa el entorno con:
+## Requisitos del entorno virtual
 
-	 ```bash
-	 source .venv/bin/activate
-	 ```
+Las dependencias del proyecto están en el archivo `requirements.txt`.
 
-2. Instala las dependencias:
+Para instalar todo directamente, ejecutá:
 
-	 ```bash
-	 pip install fastapi[standard] sqlalchemy
-	 ```
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-## Ejecucion
+En Windows PowerShell:
 
-Desde la carpeta del proyecto, ejecuta:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+## Ejecutar la API
+
+Una vez instalado el entorno virtual y las dependencias, podés levantar la aplicación con:
+
+```bash
+fastapi run
+```
+
+O bien:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-La API estara disponible en:
-
-- http://127.0.0.1:8000
-- Documentacion interactiva Swagger: http://127.0.0.1:8000/docs
-- Documentacion alternativa ReDoc: http://127.0.0.1:8000/redoc
-
-Al iniciar la aplicacion se crea el archivo `mydb.db`, que contiene la base
-de datos SQLite.
-
-## Endpoints
+## Endpoints principales
 
 ### Productos
+- GET `/productos/`
+- GET `/productos/{id}`
+- POST `/productos/`
+- PUT `/productos/{id}`
+- DELETE `/productos/{id}`
 
-| Metodo | Ruta | Descripcion |
-| --- | --- | --- |
-| `POST` | `/productos` | Crear un producto |
-| `GET` | `/productos/` | Listar todos los productos |
-| `GET` | `/productos/{id}` | Consultar un producto |
-| `PUT` | `/productos/{id}` | Modificar un producto |
-| `DELETE` | `/productos/{id}` | Eliminar un producto |
+### Carritos
+- GET `/carritos/`
+- GET `/carritos/{id}`
+- POST `/carritos/`
+- PUT `/carritos/{id}`
+- DELETE `/carritos/{id}`
 
-Ejemplo para crear un producto:
-
-```json
-{
-	"nombre": "Teclado",
-	"precio": 25.5
-}
-```
+### Productos en carrito
+- GET `/carrito_productos/{id}/productos`
+- POST `/carrito_productos/{id}/productos`
 
 ### Ventas
+- GET `/ventas/`
+- GET `/ventas/{id}`
+- POST `/ventas/`
+- PUT `/ventas/{id}`
+- DELETE `/ventas/{id}`
 
-| Metodo | Ruta | Descripcion |
-| --- | --- | --- |
-| `POST` | `/ventas` | Registrar una venta |
-| `GET` | `/ventas/` | Listar todas las ventas |
-| `GET` | `/ventas/{id}` | Consultar una venta |
-| `PUT` | `/ventas/{id}` | Modificar una venta |
-| `DELETE` | `/ventas/{id}` | Eliminar una venta |
+## Base de datos
 
-Ejemplo para registrar una venta del producto con ID `1`:
+La aplicación usa SQLite y crea la base de datos automáticamente al iniciar, a partir de `database.py` y `models.py`.
 
-```json
-{
-	"producto_id": 1,
-	"cantidad": 2
-}
-```
+## Observación
 
-El campo `precio_total` se calcula automaticamente usando el precio del
-producto y la cantidad vendida.
-
-## Estructura del proyecto
-
-```text
-.
-├── database.py   # Configuracion de SQLite y sesiones SQLAlchemy
-├── main.py       # Aplicacion FastAPI y endpoints
-├── models.py     # Modelos Producto y Venta
-├── productos.py  # Operaciones de productos
-├── ventas.py     # Operaciones de ventas
-└── README.md     # Documentacion del proyecto
-```
-
-## Validaciones
-
-- No se puede crear una venta para un producto inexistente.
-- La cantidad de una venta debe ser mayor que cero.
-- Las consultas, modificaciones y eliminaciones de IDs inexistentes devuelven
-	un error `404`.
+Este proyecto fue desarrollado como ejemplo de práctica para aprender FastAPI, validación con Pydantic y relaciones con SQLAlchemy.

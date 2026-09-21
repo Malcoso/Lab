@@ -18,6 +18,7 @@ def borrarventa(venta,db):
         db.commit()
         return venta
     except Exception as e:
+        db.rollback()
         raise e
 
 def modificarventa(venta,datos,db):
@@ -28,6 +29,7 @@ def modificarventa(venta,datos,db):
         db.commit()
         db.refresh(venta)
     except Exception as e:
+        db.rollback()
         raise e
 
 
@@ -44,18 +46,8 @@ def ventasgen(db):
     ]         
 
 def busquedaventa(id,db):
-    venta = db.query(Venta).filter_by(id=id).first()
-    if venta:
-        return venta
-    else:
-        return None
+    return db.query(Venta).filter(Venta.id == id).first()
 
-def obtener_venta(id,db):
-    venta=db.get(Venta,id)
-    if venta:
-        return venta
-    else: 
-        return None
 
 def mostrarventa(venta, db):
     carrito = venta.carrito

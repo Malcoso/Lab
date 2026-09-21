@@ -1,5 +1,4 @@
 from models import Carrito_Producto
-from productos import mostrarprod
 
 def altacarrito_producto(idcarrito,carrito_producto,db):
     try:

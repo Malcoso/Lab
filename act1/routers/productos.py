@@ -23,7 +23,9 @@ def crear_producto(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El producto ya existe.",
             )
-
+        if datos.precio <=0:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "El producto tiene que tener un valor mayor a 0")
+        
         producto = Producto(nombre=nombre, precio=datos.precio)
         return altaprod(producto, db)
     except HTTPException:
@@ -53,9 +55,17 @@ def modificar_producto(id: int, datos: ProductoCrear, db: Session = Depends(get_
     producto = db.get(Producto, id)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
-
-    modifprod(producto, datos, db)
-    return producto
+    nombre = datos.nombre.strip()
+    producto_existente = db.query(Producto).filter(Producto.nombre == nombre).first()
+    if producto_existente:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El producto ya existe.",
+            )
+    if datos.precio <=0:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "El producto tiene que tener un valor mayor a 0")
+    
+    return modifprod(producto, datos, db)
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

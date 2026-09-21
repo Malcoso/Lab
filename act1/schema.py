@@ -16,14 +16,6 @@ class VentaCrear(BaseModel):                            #Input venta
     hora_venta : time
     carrito_id : int
 
-class VentaRespuesta(BaseModel):                        #Lo que se va mostrar de la venta
-    id: int
-    dia: date
-    hora: time
-    carrito: CarritoRespuesta
-
-    model_config = ConfigDict(from_attributes=True)
-
 class VentaListaRespuesta(BaseModel):
     id: int
     dia: date
@@ -37,7 +29,7 @@ class VentaDetalleRespuesta(BaseModel):
     fecha: date
     hora: time
     precio_total: float
-    carrito: CarritoRespuesta
+    carrito: CarritoRespuestaDetalle
 
     model_config = ConfigDict(from_attributes=True)
     
@@ -59,7 +51,7 @@ class CarritosRespuesta(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
     
-class CarritoRespuesta(BaseModel):
+class CarritoRespuestaDetalle(BaseModel):
     id : int
     fecha_creacion : date
     estado : str
@@ -68,7 +60,7 @@ class CarritoRespuesta(BaseModel):
     total : float
     model_config = ConfigDict(from_attributes=True)
 
-class CarritoRespuestas(BaseModel):
+class CarritoRespuesta(BaseModel):
     id : int
     fecha_creacion : date
     estado : str
@@ -90,7 +82,7 @@ class Carrito_ProductoRespuesta(BaseModel):
 
     model_config=ConfigDict(from_attributes=True)
 
-class Carrito_ProductoRespuestas(BaseModel):
+class Carrito_ProductoRespuestaDetalle(BaseModel):
     id : int
     id_producto : int
     cantidad : int    

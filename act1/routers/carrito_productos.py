@@ -6,12 +6,12 @@ from carrito_producto import altacarrito_producto,mostrarcarrito_producto
 from carrito_producto import busq_prod_carrito,borrar_prod_carrito,busquedacarritos_prod
 from carrito import busquedacarrito
 from productos import busquedaprod
-from schema import Carrito_ProductoCrear, Carrito_ProductoRespuesta,Carrito_ProductoRespuestas
-from models import Carrito_Producto
+from schema import Carrito_ProductoCrear, Carrito_ProductoRespuesta,Carrito_ProductoRespuestaDetalle
+
 router = APIRouter(prefix="/carritos", tags=["carrito_productos"])
 
 
-@router.post("/{id}/productos", response_model=Carrito_ProductoRespuestas, status_code=status.HTTP_201_CREATED)
+@router.post("/{id}/productos", response_model=Carrito_ProductoRespuestaDetalle, status_code=status.HTTP_201_CREATED)
 def crear_carrito_producto(
     id: int,
     datos: Carrito_ProductoCrear,
