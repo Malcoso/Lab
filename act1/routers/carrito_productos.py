@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from carrito_producto import altacarrito_producto,mostrarcarrito_producto
 from carrito_producto import busq_prod_carrito,borrar_prod_carrito,busquedacarritos_prod
-from carrito import busquedacarrito
+from carrito import busquedacarrito,getestadocarrito
 from productos import busquedaprod
 from schema import Carrito_ProductoCrear, Carrito_ProductoRespuesta,Carrito_ProductoRespuestaDetalle
 
@@ -23,7 +23,7 @@ def crear_carrito_producto(
         if carrito_existente is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No existe el carrito")
 
-        if carrito_existente.estado == 'abierto':
+        if getestadocarrito(carrito_existente) == 'abierto':
             if busquedaprod(datos.id_producto,db):
                 if datos.cantidad > 0:
                         item = altacarrito_producto(id,datos, db)
@@ -31,10 +31,11 @@ def crear_carrito_producto(
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La cantidad debe ser mayor a 0")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No existe el producto")
 
-        if carrito_existente.estado == 'cerrado':
+        if getestadocarrito(carrito_existente) == 'cerrado':
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="El carrito ya fue usado")
 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No existe el carrito")
+    
     except HTTPException:
         raise
     except Exception as e:
@@ -77,7 +78,7 @@ def eliminar_producto_carrito(
     if carrito is None:
         raise HTTPException(status_code=404, detail="No existe el carrito")
     
-    if carrito.estado =="cerrado":
+    if getestadocarrito(carrito) =="cerrado":
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="El carrito ya esta cerrado")
     
     item = busq_prod_carrito(db,idcarrito,id)

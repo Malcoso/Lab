@@ -1,18 +1,40 @@
 from models import Carrito_Producto
 
+def getid_carritoidcarrito_producto(carrito_producto):
+    return carrito_producto.id_carrito
+
+def getid_productocarrito_producto(carrito_producto):
+    return carrito_producto.id_producto
+
+def getcantidadcarrito_producto(carrito_producto):
+    return carrito_producto.cantidad
+
+def setid_carritoidcarrito_producto(carrito_producto,id_carrito):
+    carrito_producto.id_carrito = id_carrito
+    return carrito_producto
+
+def setid_productocarrito_producto(carrito_producto,id_producto):
+    carrito_producto.id_producto = id_producto
+    return carrito_producto
+
+def setcantidadcarrito_producto(carrito_producto,cantidad):
+    carrito_producto.cantidad = cantidad
+    return carrito_producto
+
+
 def altacarrito_producto(idcarrito,carrito_producto,db):
     try:
         item = db.query(Carrito_Producto).filter_by(
         id_carrito=idcarrito,
-        id_producto=carrito_producto.id_producto
+        id_producto=getid_productocarrito_producto(carrito_producto)
     ).first()
         if item:
-            item.cantidad +=carrito_producto.cantidad
+            item.cantidad += getcantidadcarrito_producto(carrito_producto)
         else:
             item = Carrito_Producto(
                 id_carrito=idcarrito,
-                id_producto=carrito_producto.id_producto,
-                cantidad=carrito_producto.cantidad
+                id_producto=getid_productocarrito_producto(carrito_producto),
+                cantidad=getcantidadcarrito_producto(carrito_producto)
                 )
             db.add(item)
         db.commit()
@@ -72,4 +94,8 @@ def borrar_prod_carrito(db,prod_carrito):
         raise e
 
 def buquedaprod_carrito_producto(id,db):
-    db.query(Carrito_Producto).filter(Carrito_Producto.id_producto==id).first()
+    return db.query(Carrito_Producto).filter(Carrito_Producto.id_producto==id).first()
+
+def busquedaprod_carrito_productosencarrito(id,db):
+    return db.query(Carrito_Producto).filter_by(id_carrito=id).all()
+

@@ -1,7 +1,9 @@
-from models import Venta,Carrito_Producto
-
+from models import Venta
+from carrito_producto import busquedaprod_carrito_productosencarrito
+from carrito import busquedacarrito
 def getidventa(venta):
     return venta.id
+
 def getdiaventa(venta):
     return venta.dia
 
@@ -45,9 +47,9 @@ def borrarventa(venta,db):
 
 def modificarventa(venta,datos,db):
     try:
-        venta.dia=setdiaventa(venta,datos.dia)
-        venta.hora=sethoraventa(venta,datos.hora)
-        venta.carrito_id = setcarritoventa(venta,datos.carrito_id)
+        setdiaventa(venta,datos.dia)
+        sethoraventa(venta,datos.hora)
+        setcarritoventa(venta,datos.carrito_id)
         db.commit()
         db.refresh(venta)
     except Exception as e:
@@ -72,12 +74,12 @@ def busquedaventa(id,db):
 
 
 def mostrarventa(venta, db):
-    carrito = getcarritoventa(venta)
+    carrito = busquedacarrito(getcarritoventa(venta),db)
     productos = []
     precio_total = 0.0
 
     if carrito:
-        items = db.query(Carrito_Producto).filter_by(id_carrito=carrito.id).all()
+        items = busquedaprod_carrito_productosencarrito(carrito.id,db)
 
         for item in items:
             producto = item.producto

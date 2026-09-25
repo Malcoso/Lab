@@ -1,4 +1,22 @@
-from models import Carrito,Carrito_Producto
+from models import Carrito
+from carrito_producto import busquedaprod_carrito_productosencarrito
+
+def getidcarrito(carrito):
+    return carrito.id
+
+def getfecha_creacioncarrito(carrito):
+    return carrito.fecha_creacion
+
+def getestadocarrito(carrito):
+    return carrito.estado
+
+def setfecha_creacioncarrito(carrito,nuevafecha):
+    carrito.fecha_creacion=nuevafecha
+    return carrito
+
+def setestadocarrito(carrito,estado):
+    carrito.estado = estado
+    return carrito
 
 def altacarrito(carrito,db):
     try:
@@ -12,7 +30,7 @@ def altacarrito(carrito,db):
         raise e
 
 def mostrarcarrito(carrito,db):
-    items = db.query(Carrito_Producto).filter_by(id_carrito=carrito.id).all()
+    items = busquedaprod_carrito_productosencarrito(carrito.id,db)
 
     productos = []
 
@@ -33,17 +51,17 @@ def mostrarcarrito(carrito,db):
         })
 
     return {
-        "id": carrito.id,
-        "fecha_creacion": carrito.fecha_creacion,
-        "estado": carrito.estado,
+        "id": getidcarrito(carrito),
+        "fecha_creacion": getfecha_creacioncarrito(carrito),
+        "estado": getestadocarrito(carrito),
         "productos": productos,
 
     }
 
 def modifcarrito(carrito,datos,db):
     try:
-        carrito.fecha_creacion=datos.fecha_creacion
-        carrito.estado=datos.estado
+        setfecha_creacioncarrito(carrito,datos.fecha_creacion)
+        setestadocarrito(carrito,datos.estado)
         db.commit()
         db.refresh(carrito)
         print("carrito modificado")

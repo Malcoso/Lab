@@ -96,6 +96,7 @@ def enlazar_venta(
             )
         modificarventa(venta,datos,db)
         return {"detail": "Venta desvinculada"}
+    
     carritos = busquedacarrito(carrito,db)
     if carritos is None:
         raise HTTPException(status_code=404, detail="Carrito no encontrado")
@@ -106,11 +107,10 @@ def enlazar_venta(
     if carritos.estado!= 'cerrado':
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail ="El carrito tiene que estar cerrado para continuar")
     
-
     datos = Venta(
-        dia=getdiaventa(venta),
-        hora=gethoraventa(venta),
-        carrito_id = carrito
+            dia=getdiaventa(venta),
+            hora=gethoraventa(venta),
+            carrito_id = carrito
     )
     modificarventa(venta,datos,db)
     return {"detail" : "Venta finalizada" }
