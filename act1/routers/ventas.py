@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import  Venta
 from ventas import altaventa, ventasgen, busquedaventa, modificarventa, borrarventa,mostrarventa
-from carrito import busquedacarrito,modifcarrito
+from ventas import getdiaventa,gethoraventa,getcarritoventa
+from carrito import busquedacarrito
 from schema import VentaCrear,VentaListaRespuesta,VentaDetalleRespuesta
 
 router = APIRouter(prefix="/ventas", tags=["ventas"])
@@ -43,7 +44,7 @@ def modificar_venta(id: int, datos: VentaCrear, db: Session = Depends(get_db)):
     if venta is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venta no encontrada.")
 
-    carrito_actual = busquedacarrito(venta.carrito_id, db)
+    carrito_actual = busquedacarrito(getcarritoventa(venta), db)
     if carrito_actual is not None:
         if carrito_actual.estado == 'Cerrado':
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No se puede modificar una venta cerrada")
@@ -70,7 +71,7 @@ def eliminar_venta(id: int, db: Session = Depends(get_db)):
     if venta is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venta no encontrada.")
     
-    carrito = busquedacarrito(venta.carrito_id, db)
+    carrito = busquedacarrito(getcarritoventa(venta), db)
     if carrito is not None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se puede borrar una venta con un carrito ya asignado.")
 
@@ -84,14 +85,13 @@ def enlazar_venta(
     db : Session=Depends(get_db)
 ):
     venta = busquedaventa(id,db)
-    print(venta)
     if venta is None: 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venta no encontrada.")
     
     if carrito==-1:
         datos = Venta(
-                dia=venta.dia,
-                hora=venta.hora,
+                dia=getdiaventa(venta),
+                hora=gethoraventa(venta),
                 carrito_id = None
             )
         modificarventa(venta,datos,db)
@@ -108,8 +108,8 @@ def enlazar_venta(
     
 
     datos = Venta(
-        dia=venta.dia,
-        hora=venta.hora,
+        dia=getdiaventa(venta),
+        hora=gethoraventa(venta),
         carrito_id = carrito
     )
     modificarventa(venta,datos,db)

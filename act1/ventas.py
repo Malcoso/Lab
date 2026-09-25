@@ -1,5 +1,27 @@
 from models import Venta,Carrito_Producto
 
+def getidventa(venta):
+    return venta.id
+def getdiaventa(venta):
+    return venta.dia
+
+def gethoraventa(venta):
+    return venta.hora
+
+def getcarritoventa(venta):
+    return venta.carrito_id
+
+def setdiaventa(venta,dia):
+    venta.dia=dia
+    return venta
+
+def sethoraventa(venta,hora):
+    venta.hora=hora
+    return venta
+
+def setcarritoventa(venta,carrito):
+    venta.carrito_id=carrito
+    return venta
  
 def altaventa(venta, db):
     try:
@@ -23,9 +45,9 @@ def borrarventa(venta,db):
 
 def modificarventa(venta,datos,db):
     try:
-        venta.dia=datos.dia
-        venta.hora=datos.hora
-        venta.carrito_id = datos.carrito_id
+        venta.dia=setdiaventa(venta,datos.dia)
+        venta.hora=sethoraventa(venta,datos.hora)
+        venta.carrito_id = setcarritoventa(venta,datos.carrito_id)
         db.commit()
         db.refresh(venta)
     except Exception as e:
@@ -50,7 +72,7 @@ def busquedaventa(id,db):
 
 
 def mostrarventa(venta, db):
-    carrito = venta.carrito
+    carrito = getcarritoventa(venta)
     productos = []
     precio_total = 0.0
 
@@ -74,9 +96,9 @@ def mostrarventa(venta, db):
             })
 
     return {
-        "id": venta.id,
-        "fecha": venta.dia,
-        "hora": venta.hora,
+        "id": getidventa(venta),
+        "fecha": getdiaventa(venta),
+        "hora": gethoraventa(venta),
         "precio_total": precio_total,
         "carrito": {
             "id": carrito.id if carrito else None,

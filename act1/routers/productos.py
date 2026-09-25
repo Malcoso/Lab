@@ -2,8 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Producto,Carrito_Producto
-from productos import altaprod, productosgen, busquedaprod, modifprod, borraprod
+from models import Producto
+
+from productos import altaprod, modifprod, borraprod
+from productos import productosgen,busquedaprod,busquedaprodnombre
+from carrito_producto import buquedaprod_carrito_producto
 from schema import ProductoCrear, ProductoRespuesta
 
 router = APIRouter(prefix="/productos", tags=["productos"])
@@ -16,7 +19,7 @@ def crear_producto(
 ):
     try:
         nombre = datos.nombre.strip()
-        producto_existente = db.query(Producto).filter(Producto.nombre == nombre).first()
+        producto_existente = busquedaprodnombre(nombre,db)
 
         if producto_existente:
             raise HTTPException(
@@ -44,7 +47,7 @@ def listar_productos(db: Session = Depends(get_db)):
 
 @router.get("/{id}", response_model=ProductoRespuesta)
 def obtener_producto(id: int, db: Session = Depends(get_db)):
-    producto = db.get(Producto, id)
+    producto = busquedaprod(id,db)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     return busquedaprod(id, db)
@@ -52,11 +55,11 @@ def obtener_producto(id: int, db: Session = Depends(get_db)):
 
 @router.put("/{id}", response_model=ProductoRespuesta)
 def modificar_producto(id: int, datos: ProductoCrear, db: Session = Depends(get_db)):
-    producto = db.get(Producto, id)
+    producto = busquedaprod(id,db)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     nombre = datos.nombre.strip()
-    producto_existente = db.query(Producto).filter(Producto.nombre == nombre).first()
+    producto_existente = busquedaprodnombre(nombre,db)
     if producto_existente:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -65,17 +68,21 @@ def modificar_producto(id: int, datos: ProductoCrear, db: Session = Depends(get_
 
     if datos.precio <=0:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "El producto tiene que tener un valor mayor a 0")
+
+    producto_usado = buquedaprod_carrito_producto(id,db)
+    if producto_usado: 
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail = "El producto fue utilizado en un carrito")  
     
     return modifprod(producto, datos, db)
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_producto(id: int, db: Session = Depends(get_db)):
-    producto = db.get(Producto, id)
+    producto = busquedaprod(id,db)
     if producto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado.")
     
-    producto_usado = db.query(Carrito_Producto).filter(Carrito_Producto.id_producto==id).first()
+    producto_usado = buquedaprod_carrito_producto(id,db)
     if producto_usado: 
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail = "El producto fue utilizado en un carrito")
     borraprod(producto, db)

@@ -1,5 +1,22 @@
 from models import Producto
 
+def getprecioproducto(producto):
+    return producto.precio
+
+def getnombreproducto(producto):
+    return producto.nombre
+
+def getidproducto(producto):
+    return producto.id
+
+def setnombreproducto(producto,nombre):
+    producto.nombre=nombre
+    return producto
+
+def setprecioproducto(producto,precio):
+    producto.precio=precio
+    return producto
+
 def altaprod(producto, db):             #Alta producto
     try:
         db.add(producto)
@@ -11,19 +28,10 @@ def altaprod(producto, db):             #Alta producto
         db.rollback()
         raise e
 
-def mostrarprod(producto):            #Muestra el producto
-    return {
-
-        "id Producto": producto.id,
-        "nombre ": producto.nombre,
-        "precio": producto.precio
-
-    }
-
 def modifprod(producto,datos,db):       #Modificacion producto
     try:
-        producto.nombre=datos.nombre
-        producto.precio=datos.precio
+        setnombreproducto(producto,datos.nombre)
+        setprecioproducto(producto,datos.precio)
         db.commit()
         db.refresh(producto)
         print("Producto modificado")
@@ -53,3 +61,9 @@ def busquedaprod(id,db):                                 #Busca el producto eleg
     else:
         return None
 
+def busquedaprodnombre(nombre,db):
+    producto = db.query(Producto).filter(Producto.nombre == nombre).first()
+    if producto:
+        return producto
+    else:
+        return None

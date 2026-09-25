@@ -56,23 +56,6 @@ def busquedacarritos_prod(id_carrito,db):
         return  None
     return carrito_producto
 
-def alta_carrito(db,id_carrito,id_producto,cantidad):
-    item = db.query(Carrito_Producto).filter_by(
-        id_carrito=id_carrito,
-        id_producto=id_producto
-    ).first()
-    if item:
-        item.cantidad+=cantidad
-    else:
-        item = Carrito_Producto(
-            id_carrito=id_carrito,
-            id_producto=id_producto,
-            cantidad=cantidad
-        )
-        db.add(item)
-    db.commit()
-    return item
-
 def busq_prod_carrito(db,id_carrito,id_producto):
     carrito_producto = db.query(Carrito_Producto).filter_by(id_carrito=id_carrito,id_producto=id_producto).first()
     if carrito_producto:
@@ -87,3 +70,6 @@ def borrar_prod_carrito(db,prod_carrito):
         return prod_carrito
     except Exception as e:
         raise e
+
+def buquedaprod_carrito_producto(id,db):
+    db.query(Carrito_Producto).filter(Carrito_Producto.id_producto==id).first()
