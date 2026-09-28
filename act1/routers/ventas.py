@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import  Venta
 from ventas import altaventa, ventasgen, busquedaventa, modificarventa, borrarventa,mostrarventa
-from ventas import getdiaventa,gethoraventa,getcarritoventa
+from ventas import getdiaventa,gethoraventa,getcarritoventa,gettotal_venta
 from carrito import busquedacarrito
 from schema import VentaCrear,VentaListaRespuesta,VentaDetalleRespuesta
 
@@ -17,7 +17,8 @@ def crear_venta(datos: VentaCrear, db: Session = Depends(get_db)):
     venta = Venta(
         dia=datos.dia_venta,
         hora=datos.hora_venta,
-        carrito_id = None
+        carrito_id = None,
+        precio_total = 0
     )
     
     altaventa(venta, db)
@@ -49,16 +50,19 @@ def modificar_venta(id: int, datos: VentaCrear, db: Session = Depends(get_db)):
         if carrito_actual.estado == 'Cerrado':
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No se puede modificar una venta cerrada")
         else:
+            precio_total = gettotal_venta(venta)
             venta = Venta(
             dia=datos.dia_venta,
             hora=datos.hora_venta,
-            carrito_id = carrito_actual.id
+            carrito_id = carrito_actual.id,
+            precio_total = precio_total
         )
     else:
         venta = Venta(
         dia=datos.dia_venta,
         hora=datos.hora_venta,
-        carrito_id = None
+        carrito_id = None,
+        precio_total = 0
         )
         
     modificarventa(venta,datos,db)

@@ -20,6 +20,7 @@ class Venta(base):
 
     carrito_id = Column(Integer,ForeignKey('carritos.id'))
     carrito = relationship('Carrito',back_populates='venta')
+    precio_total = Column(Float,nullable=False)
 
 class Carrito(base):
     __tablename__ = 'carritos'

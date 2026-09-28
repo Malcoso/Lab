@@ -1,6 +1,7 @@
 from models import Carrito
 from carrito_producto import busquedaprod_carrito_productosencarrito
 
+
 def getidcarrito(carrito):
     return carrito.id
 

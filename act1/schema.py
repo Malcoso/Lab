@@ -23,6 +23,7 @@ class VentaListaRespuesta(BaseModel):
     dia: date
     hora: time
     carrito_id: int | None = None
+    total : float
 
     model_config = ConfigDict(from_attributes=True)
 
