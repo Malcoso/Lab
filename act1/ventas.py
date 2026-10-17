@@ -1,6 +1,6 @@
 from models import Venta
 from carrito_producto import busquedaprod_carrito_productosencarrito
-from carrito import busquedacarrito
+from carrito import busquedacarrito, getidcarrito
 def getidventa(venta):
     return venta.id
 
@@ -14,7 +14,7 @@ def getcarritoventa(venta):
     return venta.carrito_id
 
 def gettotal_venta(venta):
-    return venta.total_venta
+    return venta.precio_total
 
 def setdiaventa(venta,dia):
     venta.dia=dia
@@ -53,10 +53,10 @@ def borrarventa(venta,db):
 
 def modificarventa(venta,datos,db):
     try:
-        setdiaventa(venta,datos.dia)
-        sethoraventa(venta,datos.hora)
+        setdiaventa(venta,datos.dia_venta)
+        sethoraventa(venta,datos.hora_venta)
         setcarritoventa(venta,datos.carrito_id)
-        settotal_venta(venta,totalventa(venta,db))
+        settotal_venta(venta,totalventa(datos,db))
         db.commit()
         db.refresh(venta)
     except Exception as e:
@@ -67,13 +67,7 @@ def modificarventa(venta,datos,db):
 def ventasgen(db):
     ventas = db.query(Venta).all()
     return [
-        {
-            "id": v.id,
-            "dia": v.dia,
-            "hora": v.hora,
-            "carrito_id": v.carrito_id,
-            "precio_total": v.total
-        }
+        mostrarventasimple(v)
         for v in ventas
     ]         
 
@@ -85,9 +79,8 @@ def subtotalventa(precio,cantidad):
 
 def totalventa(venta,db):
     carrito = busquedacarrito(getcarritoventa(venta),db)
-    precio_total = 0.0
-    
     if carrito:
+        precio_total = 0.0
         items = busquedaprod_carrito_productosencarrito(carrito.id,db)
     
         for item in items:
@@ -98,36 +91,16 @@ def totalventa(venta,db):
             subtotal = subtotalventa(producto.precio,item.cantidad)
             precio_total += subtotal
    
-    return precio_total
+    return precio_total if carrito else 0.0
     
 
-def mostrarventasimple(venta,db):
-    carrito = busquedacarrito(getcarritoventa(venta),db)
-    productos = []
-    
-    if carrito:
-        items = busquedaprod_carrito_productosencarrito(carrito.id,db)
-
-        for item in items:
-            producto = item.producto
-            if producto is None:
-                continue
-
-            productos.append({
-                "id": item.id,
-                "nombre": producto.nombre
-            })
-
+def mostrarventasimple(venta):
     return {
         "id": getidventa(venta),
-        "fecha": getdiaventa(venta),
+        "dia": getdiaventa(venta),
         "hora": gethoraventa(venta),
-        "precio_total": gettotal_venta(venta),
-        "carrito": {
-            "id": carrito.id if carrito else None,
-            "fecha_creacion": carrito.fecha_creacion if carrito else None,
-            "estado": carrito.estado if carrito else None
-        } if carrito else None
+        "carrito_id": getcarritoventa(venta),
+        "total": gettotal_venta(venta)
     }
 
 def mostrarventa(venta, db):

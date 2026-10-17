@@ -11,9 +11,11 @@ class ProductoRespuesta(BaseModel):                     #Lo que se va mostrar de
     precio : float
     model_config = ConfigDict(from_attributes=True)
 
+
 class VentaCrear(BaseModel):                            #Input venta
     dia_venta : date
     hora_venta : time
+    carrito_id : int
 
 class AsociarVenta(BaseModel):
     carrito_id: int
@@ -35,6 +37,7 @@ class VentaDetalleRespuesta(BaseModel):
     carrito: CarritoRespuestaDetalle | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
     
 class CarritoCrear(BaseModel):
     fecha_creacion : date
@@ -60,7 +63,6 @@ class CarritoRespuestaDetalle(BaseModel):
     estado : str
 
     productos : list[ProductoEnCarrito]
-    total : float
     model_config = ConfigDict(from_attributes=True)
 
 class CarritoRespuesta(BaseModel):
