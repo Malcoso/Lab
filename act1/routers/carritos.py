@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Carrito,Carrito_Producto
+
+from models import Carrito
 from carrito import altacarrito, carritosgen, busquedacarrito, modifcarrito, borrarcarrito,mostrarcarrito
-from carrito_producto import borrar_prod_carrito
+
 from schema import CarritoCrear,CarritosRespuesta,CarritoRespuesta
 
 router = APIRouter(prefix="/carritos", tags=["carritos"])

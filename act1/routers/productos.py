@@ -7,6 +7,7 @@ from models import Producto
 from productos import altaprod, modifprod, borraprod
 from productos import productosgen,busquedaprod,busquedaprodnombre
 from carrito_producto import buquedaprod_carrito_producto
+
 from schema import ProductoCrear, ProductoRespuesta
 
 router = APIRouter(prefix="/productos", tags=["productos"])
