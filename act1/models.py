@@ -31,6 +31,7 @@ class Carrito(base):
     venta = relationship('Venta',back_populates='carrito')
     carrito_productos = relationship('Carrito_Producto', back_populates='carrito',cascade="all, delete-orphan")
 
+    carrito_clientes = relationship('Clientes_Has_Carritos', back_populates='carrito', cascade="all, delete-orphan")
 
 class Carrito_Producto(base):
     __tablename__ = 'carrito_productos'
@@ -44,3 +45,21 @@ class Carrito_Producto(base):
     
     cantidad=Column(Integer,nullable=False)
 
+class Clientes_Has_Carritos(base):
+    __tablename__ = 'clientes_has_carritos'
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    cliente_id = Column(Integer, ForeignKey('clientes.id'))
+    cliente = relationship('Clientes', back_populates='clientes_has_carritos')
+    carrito_id = Column(Integer, ForeignKey('carritos.id'))
+    carrito = relationship('Carrito', back_populates='clientes_has_carritos')
+
+class Clientes(base):
+    __tablename__ = 'clientes'
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    nombre = Column(String(50), nullable=False)
+    email = Column(String(100), nullable=True, unique=True)
+    telefono = Column(String(20), nullable=True)
+
+    clientes_has_carritos = relationship('Clientes_Has_Carritos', back_populates='cliente', cascade="all, delete-orphan")
+
+    

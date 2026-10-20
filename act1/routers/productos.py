@@ -67,12 +67,14 @@ def modificar_producto(id: int, datos: ProductoCrear, db: Session = Depends(get_
                 detail="El producto ya existe.",
             )
 
-    if datos.precio <=0:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "El producto tiene que tener un valor mayor a 0")
-
     producto_usado = buquedaprod_carrito_producto(id,db)
     if producto_usado: 
-         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail = "El producto fue utilizado en un carrito")  
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail = "El producto fue utilizado en un carrito")  
+
+        
+    if datos.precio <=0:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail= "El producto tiene que tener un valor mayor a 0")
+
     
     return modifprod(producto, datos, db)
 

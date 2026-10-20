@@ -11,7 +11,6 @@ class ProductoRespuesta(BaseModel):                     #Lo que se va mostrar de
     precio : float
     model_config = ConfigDict(from_attributes=True)
 
-
 class VentaCrear(BaseModel):                            #Input venta
     dia_venta : date
     hora_venta : time
@@ -61,7 +60,7 @@ class CarritoRespuestaDetalle(BaseModel):
     id : int
     fecha_creacion : date
     estado : str
-
+    cliente: ClienteRespuesta | None = None   ##VER COMO HACER ESTA PARTE
     productos : list[ProductoEnCarrito]
     model_config = ConfigDict(from_attributes=True)
 
@@ -69,10 +68,9 @@ class CarritoRespuesta(BaseModel):
     id : int
     fecha_creacion : date
     estado : str
-
+    cliente: ClienteRespuesta | None = None         ##VER COMO CARAJO HACER ESTA PARTE
     productos : list[ProductoEnCarrito]
     model_config = ConfigDict(from_attributes=True)
-
 
 class Carrito_ProductoCrear(BaseModel):
     id_producto : int
@@ -94,3 +92,31 @@ class Carrito_ProductoRespuestaDetalle(BaseModel):
     producto : ProductoRespuesta | None = None
 
     model_config=ConfigDict(from_attributes=True)
+
+
+###NUEVO - ARREGLAR / INGRESAR UN RESPUESTADETALLE CADA UNO###
+class ClienteCrear(BaseModel):
+    nombre : str
+    email : str
+    telefono : str
+
+class ClienteRespuesta(BaseModel):
+    id : int
+    nombre : str
+    email : str
+    telefono : str
+    carrito : CarritosRespuesta | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class cliente_carritoCrear(BaseModel):
+    cliente_id : int
+    carrito_id : int
+
+class cliente_carritoRespuesta(BaseModel):
+    cliente_id : int
+    carrito_id : int
+    cliente : ClienteRespuesta | None = None
+    carrito : CarritosRespuesta | None = None
+
+    model_config = ConfigDict(from_attributes=True)

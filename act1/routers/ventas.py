@@ -107,13 +107,16 @@ def enlazar_venta(
     if venta is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venta no encontrada.")
   
-    if getcarritoventa(venta):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="La venta ya tiene un carrito asociado.") 
-    
+
     if carrito == -1: 
         modificarventa(venta,VentaCrear(dia_venta=getdiaventa(venta),hora_venta=gethoraventa(venta),carrito_id=0),db)
         return {"detail": "Carrito desvinculado de la venta."}
+
      
+    if getcarritoventa(venta):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="La venta ya tiene un carrito asociado.") 
+    
+
 
     carritos = busquedacarrito(carrito, db)
     if carritos is None:

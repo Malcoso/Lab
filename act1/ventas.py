@@ -1,6 +1,7 @@
 from models import Venta
 from carrito_producto import busquedaprod_carrito_productosencarrito
 from carrito import busquedacarrito
+
 def getidventa(venta):
     return venta.id
 
