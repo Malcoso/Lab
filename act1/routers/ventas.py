@@ -150,7 +150,7 @@ def enlazar_venta(
     if venta is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Venta no encontrada.")
   
-    if getcarritoventa(venta):
+    if getcarritoventa(venta) is not None or getcarritoventa(venta) != 0:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="La venta ya tiene un carrito asociado.") 
     
     if carrito == -1: 

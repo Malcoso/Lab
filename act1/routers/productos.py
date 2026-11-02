@@ -47,26 +47,11 @@ def crear_producto(
 @router.get("/", response_model=list[ProductoRespuesta])
 def listar_productos(
      db: Session = Depends(get_db),
-     start_date: Optional[date] = None,             
-     end_date : Optional[date] = None,
      limit: Optional[int] = None,
      page : Optional[int] = None                
     ):
 
     query = db.query(Producto)
-
-    if start_date and end_date is not None:
-        if start_date > end_date:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="La fecha de inicio no puede ser mayor que la fecha de fin.",
-            )
-
-    if start_date is not None:
-        query = query.filter(Producto.fecha_creacion >= start_date)     
-
-    if  end_date is not None:
-        query = query.filter(Producto.fecha_creacion <= end_date)
 
     if limit is not None:
         if limit <= 0:
