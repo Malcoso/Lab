@@ -50,8 +50,8 @@ def borraprod(producto,db):             #Borra el producto
         db.rollback()
         raise e
 
-def productosgen(db):                       #Muestra todos los productos
-    productos = db.query(Producto).all()
+def productosgen(query ):                       #Muestra todos los productos
+    productos = query.all()
     return productos
 
 def busquedaprod(id,db):                                 #Busca el producto elegido

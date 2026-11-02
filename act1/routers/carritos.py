@@ -1,10 +1,13 @@
+from datetime import date
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
 
 from models import Carrito
-from carrito import altacarrito, carritosgen, busquedacarrito, modifcarrito, borrarcarrito,mostrarcarrito
+from carrito import altacarrito, busquedacarrito, modifcarrito, borrarcarrito, mostrarcarrito
 
 from schema import CarritoCrear,CarritosRespuesta,CarritoRespuesta
 
@@ -29,8 +32,48 @@ def crear_carrito(carrito: CarritoCrear, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[CarritoRespuesta])
-def listar_carritos(db: Session = Depends(get_db)):
-    return carritosgen(db)
+def listar_carritos(
+    db: Session = Depends(get_db),
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    limit: Optional[int] = None,
+    page: Optional[int] = None,
+):
+    query = db.query(Carrito)
+
+    if start_date is not None and end_date is not None and start_date > end_date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La fecha de inicio no puede ser mayor que la fecha de fin.",
+        )
+
+    if start_date is not None:
+        query = query.filter(Carrito.fecha_creacion >= start_date)
+
+    if end_date is not None:
+        query = query.filter(Carrito.fecha_creacion <= end_date)
+
+    if limit is not None:
+        if limit <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El límite debe ser un número positivo.",
+            )
+    else:
+        limit = 5
+    query = query.limit(limit)
+
+    if page is not None:
+        if page <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="La página debe ser un número positivo.",
+            )
+    else:
+        page = 1
+    query = query.offset((page - 1) * limit)
+
+    return [mostrarcarrito(carrito, db) for carrito in query.all()]
 
 
 @router.get("/{id}", response_model=CarritoRespuesta)
@@ -68,4 +111,3 @@ def eliminar_carrito(id: int, db: Session = Depends(get_db)):
     
     borrarcarrito(carrito, db)
     return {"detail": "Carrito eliminado."}
-
